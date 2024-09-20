@@ -14,18 +14,18 @@ import net.minecraft.client.network.ClientPlayNetworkHandler
 class BanThemAllClient : ClientModInitializer {
 
     private val logger = LogUtils.getLogger()
-    private val modData: MutableList<String> = mutableListOf()
+    private val modIndex: MutableList<String> = mutableListOf()
 
     override fun onInitializeClient() {
         logger.info("Initializing BanThemAll...")
         val modDir = FabricLoader.getInstance().gameDir.resolve("mods").toFile()
         logger.info("Generating mod data...")
-        modData += CommonUtils.generateModData(modDir)
+        modIndex += CommonUtils.generateModIndex(modDir)
 
         PayloadTypeRegistry.playC2S().register(ModListPayload.ID, ModListPayload.CODEC)
 
         ClientPlayConnectionEvents.JOIN.register { _: ClientPlayNetworkHandler, packetSender: PacketSender, _: MinecraftClient ->
-            packetSender.sendPacket(ModListPayload(modData))
+            packetSender.sendPacket(ModListPayload(modIndex))
         }
 
         logger.info("BanThemAll Client initialized.")

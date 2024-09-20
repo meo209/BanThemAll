@@ -7,7 +7,7 @@ import java.security.MessageDigest
 
 object CommonUtils {
 
-    fun generateModData(directory: File): List<String> =
+    fun generateModIndex(directory: File): List<String> =
         directory.listFiles()
             ?.filter { it.isFile && it.extension == "jar" }
             ?.map { "${it.name}:${sha256Hash(it)}" }

@@ -1,21 +1,28 @@
 package com.meo209.banthemall
 
+import com.mojang.brigadier.CommandDispatcher
 import com.mojang.logging.LogUtils
 import io.netty.buffer.ByteBuf
 import net.fabricmc.api.DedicatedServerModInitializer
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.command.CommandRegistryAccess
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.codec.PacketCodec
+import net.minecraft.server.command.CommandManager.RegistrationEnvironment
+import net.minecraft.server.command.CommandManager.literal
+import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
+
 
 class BanThemAllServer : DedicatedServerModInitializer {
 
     private val logger = LogUtils.getLogger()
     private val enableDebugInfo = true
-    private val modVerificationData = mutableListOf<String>()
+    private val modIndex = mutableListOf<String>()
 
     companion object {
         val MOD_LIST_PACKET_ID: Identifier = Identifier.of("mod_list")
@@ -46,10 +53,26 @@ class BanThemAllServer : DedicatedServerModInitializer {
             directory.mkdir()
 
         logger.info("Generating mod data...")
-        modVerificationData += CommonUtils.generateModData(directory)
+        modIndex += CommonUtils.generateModIndex(directory)
 
         if (enableDebugInfo)
-            logger.info(modVerificationData.toString())
+            logger.info(modIndex.toString())
+
+        CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher: CommandDispatcher<ServerCommandSource?>, registryAccess: CommandRegistryAccess?, environment: RegistrationEnvironment? ->
+            dispatcher.register(
+                literal("banthemall")
+                    .requires { it.hasPermissionLevel(3) }
+                .then(literal("reload").executes { ctx ->
+                    modIndex.clear()
+                    modIndex += CommonUtils.generateModIndex(directory)
+
+                    if (enableDebugInfo)
+                        logger.info(modIndex.toString())
+
+                    ctx.source.sendFeedback({ Text.literal("Refreshed mod verification index.") }, true)
+                    1
+                }))
+        })
 
         PayloadTypeRegistry.playS2C().register(ModListPayload.ID, ModListPayload.CODEC)
         PayloadTypeRegistry.playC2S().register(ModListPayload.ID, ModListPayload.CODEC)
@@ -61,7 +84,7 @@ class BanThemAllServer : DedicatedServerModInitializer {
                 logger.info("Client \"${context.player().nameForScoreboard}\" connected.")
 
                 if (enableDebugInfo)
-                    logger.info("ModData: ${payload.modData}")
+                    logger.info("ModIndex: ${payload.modIndex}")
 
                 logger.info("Checking mods...")
                 if (verifyMods(payload))
@@ -76,6 +99,6 @@ class BanThemAllServer : DedicatedServerModInitializer {
     }
 
     private fun verifyMods(payLoad: ModListPayload): Boolean =
-        payLoad.modData.all { modData -> modVerificationData.contains(modData) }
+        payLoad.modIndex.all { mod -> modIndex.contains(mod) }
 
 }
