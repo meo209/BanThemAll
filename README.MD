@@ -1,5 +1,7 @@
 # BanThemAll
 Very Simple minecraft anti-cheat for fabric
+<br>
+This project was inspired by [Inertia Anticheat](https://modrinth.com/mod/inertiaanticheat).
 
 ## How does it work?
 
