@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "banthemall",
+  "version": "${version}",
+
+  "name": "BanThemAll",
+  "description": "BAN THEM ALL",
+  "authors": [],
+  "contact": {},
+
+  "license": "GPL-3.0",
+  "icon": "assets/banthemall/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": ["com.meo209.banthemall.client.BanThemAllClient"],
+    "server": [
+      "com.meo209.banthemall.BanThemAllServer"
+    ]
+  },
+
+  "mixins": [
+    "banthemall.mixins.json"
+    ,{
+      "config": "banthemall.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
