@@ -10,7 +10,7 @@ object CommonUtils {
     fun generateModIndex(directory: File): List<String> =
         directory.listFiles()
             ?.filter { it.isFile && it.extension == "jar" }
-            ?.map { "${it.name}:${sha256Hash(it)}" }
+            ?.map { sha256Hash(it) }
             ?: emptyList()
 
     private fun sha256Hash(file: File): String {
