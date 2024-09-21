@@ -14,9 +14,8 @@
   "environment": "*",
   "entrypoints": {
     "client": ["com.meo209.banthemall.client.BanThemAllClient"],
-    "server": [
-      "com.meo209.banthemall.BanThemAllServer"
-    ]
+    "main": ["com.meo209.banthemall.BanThemAllCommon"],
+    "server": ["com.meo209.banthemall.BanThemAllServer"]
   },
 
   "mixins": [

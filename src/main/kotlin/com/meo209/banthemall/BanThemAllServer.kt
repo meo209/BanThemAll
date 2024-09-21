@@ -74,9 +74,6 @@ class BanThemAllServer : DedicatedServerModInitializer {
                 }))
         })
 
-        PayloadTypeRegistry.playS2C().register(ModListPayload.ID, ModListPayload.CODEC)
-        PayloadTypeRegistry.playC2S().register(ModListPayload.ID, ModListPayload.CODEC)
-
         ServerPlayNetworking.registerGlobalReceiver(
             ModListPayload.ID
         ) { payload: ModListPayload, context: ServerPlayNetworking.Context ->

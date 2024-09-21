@@ -22,8 +22,6 @@ class BanThemAllClient : ClientModInitializer {
         logger.info("Generating mod data...")
         modIndex += CommonUtils.generateModIndex(modDir)
 
-        PayloadTypeRegistry.playC2S().register(ModListPayload.ID, ModListPayload.CODEC)
-
         ClientPlayConnectionEvents.JOIN.register { _: ClientPlayNetworkHandler, packetSender: PacketSender, _: MinecraftClient ->
             packetSender.sendPacket(ModListPayload(modIndex))
         }
